@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WorkPulse Tracker</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1117;
+      --panel: #151b23;
+      --panel-soft: #1e2631;
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #f3f5f7;
+      --muted: #9ba6b2;
+      --accent: #4cc2ff;
+      --accent-strong: #14d18f;
+      --danger: #ff6b81;
+      --warning: #ffb84d;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #16202b 0%, var(--bg) 55%);
+      color: var(--text);
+    }
+
+    .shell {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
+    }
+
+    h1, h2, p { margin: 0; }
+    .muted { color: var(--muted); }
+    .headline { display: flex; flex-direction: column; gap: 6px; }
+    .headline h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.2px; }
+    .headline p { font-size: 14px; }
+
+    .grid { display: grid; gap: 12px; }
+    .two-col { grid-template-columns: 1fr 1fr; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input, select, button {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      color: var(--text);
+      font-size: 14px;
+      padding: 12px 14px;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button.primary { background: linear-gradient(135deg, var(--accent) 0%, #2f8cff 100%); border-color: transparent; }
+    button.secondary { background: transparent; }
+    button.success { background: rgba(20, 209, 143, 0.12); border-color: rgba(20, 209, 143, 0.35); color: #90ffd4; }
+    button.warn { background: rgba(255, 107, 129, 0.12); border-color: rgba(255, 107, 129, 0.35); color: #ffafbb; }
+
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .pill.ok { background: rgba(20, 209, 143, 0.14); color: #90ffd4; }
+    .pill.off { background: rgba(255, 107, 129, 0.14); color: #ffb4bf; }
+    .pill.warn { background: rgba(255, 184, 77, 0.14); color: #ffd18d; }
+
+    .status-list { display: flex; flex-direction: column; gap: 10px; }
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .status-item:last-child { border-bottom: 0; padding-bottom: 0; }
+
+    .hint {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .error {
+      color: #ffb4bf;
+      background: rgba(255, 107, 129, 0.12);
+      border: 1px solid rgba(255, 107, 129, 0.25);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="headline">
+      <h1>WorkPulse Tracker</h1>
+      <p class="muted">Desktop capture for application usage, session duration, and productivity logs.</p>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom: 14px;">
+        <h2 style="font-size: 16px;">Connection</h2>
+        <span id="auth-pill" class="pill off">Signed out</span>
+      </div>
+
+      <div class="grid" style="margin-bottom: 14px;">
+        <div>
+          <label for="apiUrl">API URL</label>
+          <input id="apiUrl" placeholder="http://localhost:5000/api" />
+        </div>
+        <div class="two-col grid">
+          <div>
+            <label for="role">Role</label>
+            <select id="role">
+              <option value="employee">Employee</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@company.com" />
+          </div>
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="Enter your password" />
+        </div>
+      </div>
+
+      <div class="grid two-col">
+        <button id="loginBtn" class="primary">Sign In And Start</button>
+        <button id="logoutBtn" class="secondary">Log Out</button>
+      </div>
+      <p class="hint" style="margin-top: 12px;">Use the same account you use in the web app. The tracker stores your session locally in this desktop app.</p>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom: 14px;">
+        <h2 style="font-size: 16px;">Tracker Controls</h2>
+        <span id="tracking-pill" class="pill off">Paused</span>
+      </div>
+
+      <div class="status-list">
+        <div class="status-item">
+          <span class="muted">Privacy mode</span>
+          <button id="privacyBtn" class="secondary" style="max-width: 180px;">Toggle Privacy</button>
+        </div>
+        <div class="status-item">
+          <span class="muted">Activity capture</span>
+          <button id="pauseBtn" class="success" style="max-width: 180px;">Resume Tracking</button>
+        </div>
+      </div>
+
+      <div id="errorBox" class="error" style="display: none; margin-top: 14px;"></div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size: 16px; margin-bottom: 14px;">Live Status</h2>
+      <div class="status-list">
+        <div class="status-item">
+          <span class="muted">Signed in user</span>
+          <strong id="signedUser">Not connected</strong>
+        </div>
+        <div class="status-item">
+          <span class="muted">Current session</span>
+          <strong id="sessionLabel">Waiting for tracking</strong>
+        </div>
+        <div class="status-item">
+          <span class="muted">Category</span>
+          <strong id="sessionCategory">-</strong>
+        </div>
+        <div class="status-item">
+          <span class="muted">Last sync</span>
+          <strong id="lastSync">Not synced yet</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size: 16px; margin-bottom: 10px;">How to use</h2>
+      <p class="hint">1. Start the backend and frontend from this project.</p>
+      <p class="hint">2. Sign in here with your WorkPulse account.</p>
+      <p class="hint">3. Keep this desktop app running while employees work so the backend receives app usage logs automatically.</p>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    const refs = {
+      apiUrl: document.getElementById('apiUrl'),
+      role: document.getElementById('role'),
+      email: document.getElementById('email'),
+      password: document.getElementById('password'),
+      loginBtn: document.getElementById('loginBtn'),
+      logoutBtn: document.getElementById('logoutBtn'),
+      pauseBtn: document.getElementById('pauseBtn'),
+      privacyBtn: document.getElementById('privacyBtn'),
+      authPill: document.getElementById('auth-pill'),
+      trackingPill: document.getElementById('tracking-pill'),
+      signedUser: document.getElementById('signedUser'),
+      sessionLabel: document.getElementById('sessionLabel'),
+      sessionCategory: document.getElementById('sessionCategory'),
+      lastSync: document.getElementById('lastSync'),
+      errorBox: document.getElementById('errorBox'),
+    };
+
+    let latestState = null;
+
+    function formatTime(value) {
+      if (!value) return 'Not synced yet';
+      return new Date(value).toLocaleString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        day: '2-digit',
+        month: 'short',
+      });
+    }
+
+    function render(state) {
+      latestState = state;
+      refs.apiUrl.value = state.apiUrl || 'http://localhost:5000/api';
+      refs.authPill.textContent = state.user ? 'Signed in' : 'Signed out';
+      refs.authPill.className = `pill ${state.user ? 'ok' : 'off'}`;
+
+      refs.trackingPill.textContent = state.trackingPaused ? 'Paused' : 'Active';
+      refs.trackingPill.className = `pill ${state.trackingPaused ? 'off' : 'ok'}`;
+      refs.pauseBtn.textContent = state.trackingPaused ? 'Resume Tracking' : 'Pause Tracking';
+      refs.pauseBtn.className = state.trackingPaused ? 'success' : 'warn';
+      refs.privacyBtn.textContent = state.privacyMode ? 'Privacy On' : 'Privacy Off';
+      refs.signedUser.textContent = state.user ? `${state.user.name} (${state.user.role})` : 'Not connected';
+      refs.sessionLabel.textContent = state.currentSession
+        ? `${state.currentSession.appName}${state.currentSession.windowTitle ? ` - ${state.currentSession.windowTitle}` : ''}`
+        : 'Waiting for tracking';
+      refs.sessionCategory.textContent = state.currentSession?.category || '-';
+      refs.lastSync.textContent = formatTime(state.lastSyncedAt);
+
+      if (state.lastError) {
+        refs.errorBox.style.display = 'block';
+        refs.errorBox.textContent = state.lastError;
+      } else {
+        refs.errorBox.style.display = 'none';
+        refs.errorBox.textContent = '';
+      }
+    }
+
+    refs.loginBtn.addEventListener('click', async () => {
+      try {
+        const state = await ipcRenderer.invoke('tracker:login', {
+          apiUrl: refs.apiUrl.value,
+          email: refs.email.value,
+          password: refs.password.value,
+          role: refs.role.value,
+        });
+        refs.password.value = '';
+        render(state);
+      } catch (error) {
+        render({ ...(latestState || {}), lastError: error.message });
+      }
+    });
+
+    refs.logoutBtn.addEventListener('click', async () => {
+      const state = await ipcRenderer.invoke('tracker:logout');
+      render(state);
+    });
+
+    refs.pauseBtn.addEventListener('click', async () => {
+      const state = await ipcRenderer.invoke('tracker:update-settings', {
+        trackingPaused: !latestState?.trackingPaused,
+      });
+      render(state);
+    });
+
+    refs.privacyBtn.addEventListener('click', async () => {
+      const state = await ipcRenderer.invoke('tracker:update-settings', {
+        privacyMode: !latestState?.privacyMode,
+      });
+      render(state);
+    });
+
+    ipcRenderer.on('tracker-state', (_event, state) => render(state));
+
+    ipcRenderer.invoke('tracker:get-state').then(render);
+  </script>
+</body>
+</html>

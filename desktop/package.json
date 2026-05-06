@@ -1,0 +1,19 @@
+{
+  "name": "workpulse-desktop",
+  "version": "1.0.0",
+  "description": "WorkPulse Desktop Activity Tracker (Electron)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "active-win": "^8.1.0",
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
