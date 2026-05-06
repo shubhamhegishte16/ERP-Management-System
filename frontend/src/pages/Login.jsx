@@ -2,11 +2,6 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const ADMIN_CREDENTIALS = {
-  email: 'admin@workpulse.com',
-  password: 'admin123',
-};
-
 const getHomeRoute = (role) => {
   if (role === 'admin') return '/admin/dashboard';
   if (role === 'manager') return '/manager';
@@ -21,10 +16,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const setRole = (role) => {
-    if (role === 'admin') {
-      setForm({ role, ...ADMIN_CREDENTIALS });
-      return;
-    }
     setForm({ role, email: '', password: '' });
   };
 
@@ -98,14 +89,6 @@ export default function Login() {
             No employee account?{' '}
             <Link to="/register" style={{ color:'var(--accent1)', textDecoration:'none', fontWeight:600 }}>Register here</Link>
           </p>
-
-          <div style={{ marginTop:'24px', padding:'14px', background:'var(--surface2)', borderRadius:'10px', fontSize:'13px' }}>
-            <p style={{ color:'var(--muted)', marginBottom:'8px', fontWeight:600 }}>Login Guide</p>
-            <p style={{ color:'var(--muted)' }}>Admin: <span style={{ color:'var(--accent3)' }}>admin@workpulse.com / admin123</span></p>
-            <p style={{ color:'var(--muted)' }}>Managers: <span style={{ color:'var(--accent3)' }}>shubham@gmail.com</span>, <span style={{ color:'var(--accent3)' }}>vinaya@gmail.com</span>, <span style={{ color:'var(--accent3)' }}>rushan@gmail.com</span></p>
-            <p style={{ color:'var(--muted)' }}>Manager Password: <span style={{ color:'var(--accent3)' }}>manager123</span></p>
-            <p style={{ color:'var(--muted)' }}>Employees register themselves and use their own email and password.</p>
-          </div>
         </div>
       </div>
     </div>

@@ -189,9 +189,14 @@ router.delete('/users/:id', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Admin cannot delete their own account' });
     }
 
-    const user = deleteUser(req.params.id);
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    const targetUser = listUsers().find((user) => sameId(user._id, req.params.id));
+    if (!targetUser) return res.status(404).json({ success: false, message: 'User not found' });
 
+    if (targetUser.role === 'manager') {
+      return res.status(400).json({ success: false, message: 'Managers are permanent and cannot be deleted' });
+    }
+
+    const user = deleteUser(req.params.id);
     res.json({ success: true, message: 'User deleted successfully', user: sanitizeUser(user) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

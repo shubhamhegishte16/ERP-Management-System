@@ -14,6 +14,7 @@ export default function Team() {
   const [deletingId, setDeletingId] = useState('');
 
   const isAdmin = user?.role === 'admin';
+  const canDeleteUser = (member) => isAdmin && member.role !== 'manager';
 
   useEffect(() => {
     api.get('/analytics/summary')
@@ -121,7 +122,7 @@ export default function Team() {
                   <span style={{ fontSize:'12px', color:'#6c63ff' }}>View details -&gt;</span>
                 </div>
               </div>
-              {isAdmin && (
+              {canDeleteUser(member) && (
                 <button
                   onClick={() => deleteUser(member)}
                   disabled={deletingId === member._id}
